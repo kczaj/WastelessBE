@@ -30,7 +30,7 @@ class Product(models.Model):
     image_url = models.CharField(max_length=100)
     date_added = models.DateField()
     expiration_date = models.DateField()
-    fridge_id = models.CharField(max_length=50, unique=True)
+    fridge_id = models.CharField(max_length=50, blank=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
