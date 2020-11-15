@@ -1,0 +1,14 @@
+[
+{
+  "model": "api.user",
+  "pk": "a9627308-273e-11eb-85f2-d4258b790e13",
+  "fields": {
+    "first_name": "John",
+    "last_name": "Smith",
+    "email": "johnsmith@gmail.com",
+    "username": "jsmith",
+    "password": "9e38e8d688743e0d07d669a1fcbcd35b",
+    "token": ""
+  }
+}
+]
