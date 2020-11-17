@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from rest_framework import viewsets, generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import User
 
 from .serializers import ProductSerializer, UserSerializer
@@ -9,6 +9,7 @@ from .models import Product
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsAdminUser, )
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
