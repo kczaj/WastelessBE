@@ -1,19 +1,7 @@
 from django.db import models
-
+from django.contrib.auth import get_user_model
 
 # Create your models here.
-
-class User(models.Model):
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=40)
-    email = models.CharField(max_length=30)
-    username = models.CharField(max_length=20, unique=True)
-    password = models.CharField(max_length=40)
-    token = models.CharField(max_length=50, unique=True, blank=True)
-    user_id = models.CharField(max_length=50, primary_key=True, unique=True)
-
-    def __str__(self):
-        return self.user_id
 
 
 class Product(models.Model):
@@ -30,8 +18,8 @@ class Product(models.Model):
     image_url = models.CharField(max_length=100)
     date_added = models.DateField()
     expiration_date = models.DateField()
-    fridge_id = models.CharField(max_length=50, unique=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    fridge_id = models.CharField(max_length=50, blank=True)
+    user_id = models.ForeignKey('auth.User', related_name='products', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.product_name
