@@ -2,13 +2,8 @@ from django.shortcuts import render
 
 from rest_framework import viewsets
 
-from .serializers import UserSerializer, ProductSerializer
-from .models import User, Product
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('username')
-    serializer_class = UserSerializer
+from .serializers import ProductSerializer
+from .models import Product
 
 
 class ProductViewSet(viewsets.ModelViewSet):
