@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'rest_framework',
     'django_extensions',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -84,11 +85,17 @@ DATABASES = {
         'PASSWORD': 'admin',
         'HOST': '127.0.0.1',
         'PORT': '5432',
-}
+    }
 }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES':
+        ('rest_framework.permissions.IsAuthenticatedOrReadOnly',),
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -122,5 +129,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
 django_heroku.settings(locals())
