@@ -16,7 +16,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
         fields = ('product_name', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat', 'fiber',
-                  'proteins', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
+                  'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
 
 
 class FridgeSerializer(serializers.HyperlinkedModelSerializer):
