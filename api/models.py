@@ -19,7 +19,7 @@ class Product(models.Model):
     fiber = models.FloatField()
     proteins = models.FloatField()
     salt = models.FloatField()
-    sugar = models.FloatField()
+    sugar = models.FloatField(default=0.0)
     sodium = models.FloatField()
     image_url = models.CharField(max_length=100)
     date_added = models.DateField()
