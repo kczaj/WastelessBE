@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, mixins, generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import User
 
@@ -12,6 +12,17 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAdminUser, )
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class CurrentUserViewSet(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
