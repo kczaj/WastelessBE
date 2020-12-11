@@ -1,19 +1,17 @@
-from django.shortcuts import render
-
-from rest_framework import viewsets, mixins, generics, status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework import viewsets, mixins, generics, status
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .serializers import ProductSerializer, UserSerializer, FridgeSerializer
 from .models import Product, Fridge
+from .serializers import ProductSerializer, UserSerializer, FridgeSerializer
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = (IsAdminUser, )
+    permission_classes = (IsAdminUser,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -40,13 +38,13 @@ class CurrentUserFridges(generics.ListAPIView):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     queryset = Product.objects.all().order_by('product_name')
     serializer_class = ProductSerializer
 
 
 class FridgeProductViewSet(generics.ListAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = ProductSerializer
 
     def get_queryset(self):
