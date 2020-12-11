@@ -17,5 +17,6 @@ urlpatterns = [
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('profile/', views.CurrentUserViewSet.as_view()),
     path('login/', views.CustomAuthToken.as_view()),
-    path('logout/', views.Logout.as_view())
+    path('logout/', views.Logout.as_view()),
+    path('fridge/<int:fridge_id>/', views.FridgeProductViewSet.as_view())
 ]

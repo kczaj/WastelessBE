@@ -35,6 +35,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
 
 
+class FridgeProductViewSet(generics.ListAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        f_id = self.kwargs['fridge_id']
+        return Product.objects.filter(fridge_id=f_id)
+
+
 class FridgeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Fridge.objects.all().order_by('fridge_name')
