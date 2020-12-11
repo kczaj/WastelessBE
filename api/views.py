@@ -13,7 +13,7 @@ from .models import Product, Fridge
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = (IsAdminUser, )
+    permission_classes = (IsAdminUser,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -40,18 +40,21 @@ class CurrentUserFridges(generics.ListAPIView):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     queryset = Product.objects.all().order_by('product_name')
     serializer_class = ProductSerializer
 
 
 class FridgeProductViewSet(generics.ListAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = ProductSerializer
 
     def get_queryset(self):
         f_id = self.kwargs['fridge_id']
         return Product.objects.filter(fridge_id=f_id)
+
+    # def post_product(self):
+    #     f_id
 
 
 class FridgeViewSet(viewsets.ModelViewSet):
