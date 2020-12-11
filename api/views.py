@@ -1,15 +1,13 @@
-from django.shortcuts import render
-
-from rest_framework import viewsets, mixins, generics, status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework import viewsets, mixins, generics, status
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .serializers import ProductSerializer, UserSerializer, FridgeSerializer
 from .models import Product, Fridge
+from .serializers import ProductSerializer, UserSerializer, FridgeSerializer
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -52,9 +50,6 @@ class FridgeProductViewSet(generics.ListAPIView):
     def get_queryset(self):
         f_id = self.kwargs['fridge_id']
         return Product.objects.filter(fridge_id=f_id)
-
-    # def post_product(self):
-    #     f_id
 
 
 class FridgeViewSet(viewsets.ModelViewSet):
