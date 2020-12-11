@@ -29,6 +29,16 @@ class CurrentUserViewSet(mixins.RetrieveModelMixin, generics.GenericAPIView):
         return self.retrieve(request, *args, **kwargs)
 
 
+class CurrentUserFridges(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FridgeSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        print(user)
+        return Fridge.objects.filter(user_id=user)
+
+
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, )
     queryset = Product.objects.all().order_by('product_name')
