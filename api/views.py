@@ -2,12 +2,12 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, mixins, generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Product, Fridge
-from .serializers import ProductSerializer, UserSerializer, FridgeSerializer
+from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -25,6 +25,12 @@ class CurrentUserViewSet(mixins.RetrieveModelMixin, generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+
+class UserCreate(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
+    permission_classes = (AllowAny,)
 
 
 class CurrentUserFridges(generics.ListAPIView):
