@@ -16,15 +16,19 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
 
 
-class CurrentUserViewSet(mixins.RetrieveModelMixin, generics.GenericAPIView):
+class CurrentUserViewSet(mixins.RetrieveModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self):
         return self.request.user
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 class UserCreate(generics.CreateAPIView):
