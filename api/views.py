@@ -17,7 +17,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
 
 
-class CurrentUserViewSet(mixins.RetrieveModelMixin, generics.GenericAPIView):
+class CurrentUserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -26,6 +26,9 @@ class CurrentUserViewSet(mixins.RetrieveModelMixin, generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 
 class UserCreate(generics.CreateAPIView):
