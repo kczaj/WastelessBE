@@ -7,7 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Product, Fridge
-from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer
+from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer, \
+    ChangePasswordSerializer
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -31,6 +32,20 @@ class UserCreate(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     permission_classes = (AllowAny,)
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        if hasattr(user, 'auth_token'):
+            user.auth_token.delete()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
 
 
 class CurrentUserFridges(generics.ListAPIView):
