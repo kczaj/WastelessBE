@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from rest_framework import viewsets, mixins, generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -107,4 +108,4 @@ class CustomAuthToken(ObtainAuthToken):
 class Logout(APIView):
     def get(self, request, format=None):
         request.user.auth_token.delete()
-        return Response(status=status.HTTP_200_OK)
+        return JsonResponse({'message': 'Logged out correctly'}, status=200)
