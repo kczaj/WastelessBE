@@ -24,7 +24,7 @@ class Product(models.Model):
     salt = models.FloatField()
     sugar = models.FloatField(default=0.0)
     sodium = models.FloatField()
-    image_url = models.CharField(max_length=100)
+    image_url = models.CharField(max_length=100, blank=True)
     date_added = models.DateTimeField()
     expiration_date = models.DateTimeField()
     fridge_id = models.ForeignKey(Fridge, related_name='products', on_delete=models.CASCADE)
