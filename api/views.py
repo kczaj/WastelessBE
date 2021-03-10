@@ -7,9 +7,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Product, Fridge
+from .models import Product, Fridge, Recipe, Comment
 from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer, \
-    ChangePasswordSerializer
+    ChangePasswordSerializer, RecipeSerializer, CommentSerializer
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -71,6 +71,18 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Product.objects.all().order_by('product_name')
     serializer_class = ProductSerializer
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Recipe.objects.all().order_by('recipe_name')
+    serializer_class = RecipeSerializer
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Comment.objects.all().order_by('date_added')
+    serializer_class = CommentSerializer
 
 
 class FridgeProductViewSet(generics.ListAPIView):
