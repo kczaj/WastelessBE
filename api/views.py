@@ -7,10 +7,11 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Count, Avg
 
-from .models import Product, Fridge, Recipe, Comment
+from .models import Product, Fridge, Recipe, Comment, Rating
 from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer, \
-    ChangePasswordSerializer, RecipeSerializer, CommentSerializer
+    ChangePasswordSerializer, RecipeSerializer, CommentSerializer, RatingSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -85,6 +86,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all().order_by('recipe_name')
     serializer_class = RecipeSerializer
     pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        return Recipe.objects.annotate(
+            ratings_num=Count('ratings'),
+            rating=Avg('ratings__rating')
+        )
+
+
+class RatingViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+
+
+class RatingForUserViewSet(generics.ListAPIView):
+    serializer_class = RatingSerializer
+    permission_classes = (IsAuthenticated,)
+    lookup_url_kwarg = 'recipe_id'
+
+    def get_queryset(self):
+        user = self.request.user
+        r_id = self.kwargs['recipe_id']
+        return Rating.objects.filter(recipe_id=r_id, user_id=user)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
