@@ -3,13 +3,20 @@ from django.http import JsonResponse
 from rest_framework import viewsets, mixins, generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Product, Fridge
+from .models import Product, Fridge, Recipe, Comment
 from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer, \
-    ChangePasswordSerializer
+    ChangePasswordSerializer, RecipeSerializer, CommentSerializer
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -71,6 +78,19 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Product.objects.all().order_by('product_name')
     serializer_class = ProductSerializer
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Recipe.objects.all().order_by('recipe_name')
+    serializer_class = RecipeSerializer
+    pagination_class = StandardResultsSetPagination
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    queryset = Comment.objects.all().order_by('date_added')
+    serializer_class = CommentSerializer
 
 
 class FridgeProductViewSet(generics.ListAPIView):

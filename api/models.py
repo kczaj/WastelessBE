@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -24,10 +25,42 @@ class Product(models.Model):
     salt = models.FloatField()
     sugar = models.FloatField(default=0.0)
     sodium = models.FloatField()
-    image_url = models.CharField(max_length=100, blank=True)
+    image_url = models.CharField(max_length=200, blank=True)
     date_added = models.DateTimeField()
     expiration_date = models.DateTimeField()
     fridge_id = models.ForeignKey(Fridge, related_name='products', on_delete=models.CASCADE)
+    categories = ArrayField(models.CharField(max_length=50, blank=True), blank=False, null=True)
 
     def __str__(self):
         return self.product_name
+
+
+class Recipe(models.Model):
+    recipe_name = models.CharField(max_length=200)
+    ingredients = ArrayField(models.CharField(max_length=50, blank=True), blank=False, null=True)
+    tags = ArrayField(models.CharField(max_length=50, blank=True), blank=True, null=True)
+    DIFFICULTY_CHOICES = [('BG', 'Beginner'), ('IT', 'Intermediate'), ('AD', 'Advanced')]
+    difficulty = models.CharField(
+        max_length=2,
+        choices=DIFFICULTY_CHOICES,
+        default='BG',
+    )
+    description = models.TextField()
+    instructions = models.TextField()
+    image_url = models.CharField(max_length=200, blank=True)
+    MEAL_CHOICES = [('BF', 'Breakfast'), ('LU', 'Lunch'), ('DN', 'Dinner'), ('SU', 'Supper')]
+    meal = models.CharField(max_length=2, choices=MEAL_CHOICES, default='BF')
+    rating = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return self.recipe_name
+
+
+class Comment(models.Model):
+    author = models.CharField(max_length=100)
+    date_added = models.DateTimeField()
+    content = models.TextField()
+    recipe_id = models.ForeignKey(Recipe, related_name='comments', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.date_added

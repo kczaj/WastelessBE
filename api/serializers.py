@@ -2,7 +2,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import User, UserManager
 from rest_framework import serializers
 
-from .models import Product, Fridge
+from .models import Product, Fridge, Recipe, Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -59,8 +59,25 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'product_name', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat', 'fiber',
+        fields = ('id', 'product_name', 'categories', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat', 'fiber',
                   'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    comments = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'recipe_name', 'difficulty', 'tags', 'ingredients', 'description', 'instructions', 'image_url',
+                  'meal', 'rating', 'comments')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    recipe_id = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.get_queryset())
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'author', 'date_added', 'content', 'recipe_id')
 
 
 class FridgeSerializer(serializers.ModelSerializer):
