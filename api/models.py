@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -50,7 +51,6 @@ class Recipe(models.Model):
     image_url = models.CharField(max_length=200, blank=True)
     MEAL_CHOICES = [('BF', 'Breakfast'), ('LU', 'Lunch'), ('DN', 'Dinner'), ('SU', 'Supper')]
     meal = models.CharField(max_length=2, choices=MEAL_CHOICES, default='BF')
-    rating = models.FloatField(default=0.0)
 
     def __str__(self):
         return self.recipe_name
@@ -63,4 +63,17 @@ class Comment(models.Model):
     recipe_id = models.ForeignKey(Recipe, related_name='comments', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.date_added
+        return self.id
+
+
+class Rating(models.Model):
+    user_id = models.ForeignKey('auth.User', related_name='ratings', on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
+    recipe_id = models.ForeignKey(Recipe, related_name='ratings', on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        unique_together = ('user_id', 'recipe_id')
+        #index_together = ('user_id', 'recipe_id')
+
+    def __str__(self):
+        return self.id

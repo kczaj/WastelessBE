@@ -2,7 +2,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import User, UserManager
 from rest_framework import serializers
 
-from .models import Product, Fridge, Recipe, Comment
+from .models import Product, Fridge, Recipe, Comment, Rating
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email',  'fridges']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'fridges']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -59,17 +59,20 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'product_name', 'categories', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat', 'fiber',
-                  'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
+        fields = (
+        'id', 'product_name', 'categories', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat', 'fiber',
+        'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
     comments = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    rating = serializers.FloatField(required=False)
+    ratings_num = serializers.IntegerField(required=False)
 
     class Meta:
         model = Recipe
         fields = ('id', 'recipe_name', 'difficulty', 'tags', 'ingredients', 'description', 'instructions', 'image_url',
-                  'meal', 'rating', 'comments')
+                  'meal', 'rating', 'ratings_num', 'comments')
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -78,6 +81,17 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'author', 'date_added', 'content', 'recipe_id')
+
+
+class RatingSerializer(serializers.ModelSerializer):
+    recipe_id = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.get_queryset())
+
+    class Meta:
+        model = Rating
+        fields = ('id', 'rating', 'recipe_id', 'user_id')
+
+    def create(self, validated_data):
+        return Rating.objects.create(**validated_data)
 
 
 class FridgeSerializer(serializers.ModelSerializer):
