@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email',  'fridges']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'fridges']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -59,8 +59,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'product_name', 'categories', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat', 'fiber',
-                  'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
+        fields = (
+        'id', 'product_name', 'categories', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat', 'fiber',
+        'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -89,6 +90,9 @@ class RatingSerializer(serializers.ModelSerializer):
         model = Rating
         fields = ('id', 'rating', 'recipe_id', 'user_id')
 
+    def create(self, validated_data):
+        return Rating.objects.create(**validated_data)
+
 
 class FridgeSerializer(serializers.ModelSerializer):
     products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
@@ -96,4 +100,3 @@ class FridgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fridge
         fields = ('id', 'fridge_name', 'user_id', 'products')
-

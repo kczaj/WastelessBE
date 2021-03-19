@@ -100,15 +100,20 @@ class RatingViewSet(viewsets.ModelViewSet):
     serializer_class = RatingSerializer
 
 
-class RatingForUserViewSet(generics.ListAPIView):
+class RatingForUserViewSet(generics.RetrieveUpdateDestroyAPIView, mixins.CreateModelMixin):
     serializer_class = RatingSerializer
     permission_classes = (IsAuthenticated,)
-    lookup_url_kwarg = 'recipe_id'
+    lookup_field = 'recipe_id'
 
     def get_queryset(self):
         user = self.request.user
         r_id = self.kwargs['recipe_id']
         return Rating.objects.filter(recipe_id=r_id, user_id=user)
+
+    def post(self, request, *args, **kwargs):
+        request.data._mutable = True
+        request.data['user_id'] = self.request.user.id
+        return self.create(request, *args, **kwargs)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
