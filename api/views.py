@@ -95,7 +95,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         difficulty = self.request.query_params.get('difficulty', None)
         meal = self.request.query_params.get('meal', None)
         order = self.request.query_params.get('order', None)
-        order_dict = {'na': 'recipe_name', 'nd': '-recipe_name', 'ra': 'rating', 'rd': '-rating'}
+        order_dict = {'na': 'recipe_name', 'nd': '-recipe_name', 'ra': 'rating', 'rd': '-rating', 'pa': 'ratings_num', 'pd': '-ratings_num'}
         queryset = Recipe.objects.annotate(
             ratings_num=Count('ratings'),
             rating=Coalesce(Avg('ratings__rating'), 0))
