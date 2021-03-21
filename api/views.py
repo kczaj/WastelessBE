@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Count, Avg
+from django.db.models.functions import Coalesce
 
 from .models import Product, Fridge, Recipe, Comment, Rating
 from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer, \
@@ -88,15 +89,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        ratings_count = Count('ratings')
-        if ratings_count == 0:
-            Recipe.objects.annotate(
-                ratings_num=0,
-                rating=0.0)
-        else:
-            queryset = Recipe.objects.annotate(
-                ratings_num=Count('ratings'),
-                rating=Avg('ratings__rating'))
         recipe_name = self.request.query_params.get('name', None)
         ingredients = self.request.query_params.get('ingredients', None)
         tags = self.request.query_params.get('tags', None)
@@ -104,6 +96,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         meal = self.request.query_params.get('meal', None)
         order = self.request.query_params.get('order', None)
         order_dict = {'na': 'recipe_name', 'nd': '-recipe_name', 'ra': 'rating', 'rd': '-rating'}
+        queryset = Recipe.objects.annotate(
+            ratings_num=Count('ratings'),
+            rating=Coalesce(Avg('ratings__rating'), 0))
         if recipe_name is not None:
             queryset = queryset.filter(recipe_name__contains=recipe_name)
         if ingredients is not None:
