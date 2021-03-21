@@ -88,11 +88,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return Recipe.objects.annotate(
+        ingredients = self.request.query_params.get('ingredients', None)
+        tags = self.request.query_params.get('tags', None)
+        difficulty = self.request.query_params.get('difficulty', None)
+        meal = self.request.query_params.get('meal', None)
+        queryset = Recipe.objects.annotate(
             ratings_num=Count('ratings'),
-            rating=Avg('ratings__rating')
-        )
+            rating=Avg('ratings__rating'))
+        if ingredients is not None:
+            queryset = queryset.filter(ingredients__contains=ingredients)
+        if tags is not None:
+            queryset = queryset.filter(tags__contains=tags)
+        if difficulty is not None:
+            queryset = queryset.filter(difficulty__contains=difficulty)
+        if meal is not None:
+            queryset = queryset.filter(meal__contains=meal)
 
+        return queryset
 
 class RatingViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
