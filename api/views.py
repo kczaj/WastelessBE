@@ -93,6 +93,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         tags = self.request.query_params.get('tags', None)
         difficulty = self.request.query_params.get('difficulty', None)
         meal = self.request.query_params.get('meal', None)
+        order = self.request.query_params.get('order', None)
+        order_dict = {'na': 'recipe_name', 'nd': '-recipe_name', 'ra': 'rating', 'rd': '-rating'}
         queryset = Recipe.objects.annotate(
             ratings_num=Count('ratings'),
             rating=Avg('ratings__rating'))
@@ -106,6 +108,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(difficulty__contains=difficulty)
         if meal is not None:
             queryset = queryset.filter(meal__contains=meal)
+        if order is not None:
+            if order in order_dict:
+                queryset = queryset.order_by(order_dict.get(order))
+            else:
+                queryset = queryset.order_by(order_dict.get('na'))
 
         return queryset
 
