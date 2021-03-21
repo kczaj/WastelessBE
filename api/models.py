@@ -37,9 +37,10 @@ class Product(models.Model):
 
 
 class Recipe(models.Model):
+    user_id = models.ForeignKey('auth.User', related_name='recipes', on_delete=models.CASCADE, null=True)
     recipe_name = models.CharField(max_length=200)
-    ingredients = ArrayField(models.CharField(max_length=50, blank=True), blank=False, null=True)
-    tags = ArrayField(models.CharField(max_length=50, blank=True), blank=True, null=True)
+    ingredients = ArrayField(models.CharField(max_length=50, blank=True), blank=False, default=list)
+    tags = ArrayField(models.CharField(max_length=50, blank=True), blank=True, default=list)
     DIFFICULTY_CHOICES = [('BG', 'Beginner'), ('IT', 'Intermediate'), ('AD', 'Advanced')]
     difficulty = models.CharField(
         max_length=2,
@@ -48,16 +49,17 @@ class Recipe(models.Model):
     )
     description = models.TextField()
     instructions = models.TextField()
-    image_url = models.CharField(max_length=200, blank=True)
+    image_url = models.TextField()
     MEAL_CHOICES = [('BF', 'Breakfast'), ('LU', 'Lunch'), ('DN', 'Dinner'), ('SU', 'Supper')]
     meal = models.CharField(max_length=2, choices=MEAL_CHOICES, default='BF')
+    prep_time = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return self.recipe_name
 
 
 class Comment(models.Model):
-    author = models.CharField(max_length=100)
+    author = models.ForeignKey('auth.User', related_name='comments', on_delete=models.CASCADE)
     date_added = models.DateTimeField()
     content = models.TextField()
     recipe_id = models.ForeignKey(Recipe, related_name='comments', on_delete=models.CASCADE)
