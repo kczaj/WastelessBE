@@ -65,7 +65,7 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response({'token': token.key}, status=status.HTTP_200_OK)
 
 
-class CurrentUserFridges(generics.ListAPIView):
+class CurrentUserFridges(generics.ListAPIView, mixins.CreateModelMixin):
     permission_classes = (IsAuthenticated,)
     serializer_class = FridgeSerializer
 
@@ -73,6 +73,41 @@ class CurrentUserFridges(generics.ListAPIView):
         user = self.request.user
         print(user)
         return Fridge.objects.filter(user_id=user)
+
+    def post(self, request, *args, **kwargs):
+        request.data._mutable = True
+        request.data['user_id'] = self.request.user.id
+        return self.create(request, *args, **kwargs)
+
+
+class CurrentUserRecipes(generics.ListAPIView, mixins.CreateModelMixin):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = RecipeSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        print(user)
+        return Recipe.objects.filter(user_id=user)
+
+    def post(self, request, *args, **kwargs):
+        request.data._mutable = True
+        request.data['user_id'] = self.request.user.id
+        return self.create(request, *args, **kwargs)
+
+
+class CurrentUserComments(generics.ListAPIView, mixins.CreateModelMixin):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        print(user)
+        return Comment.objects.filter(author=user)
+
+    def post(self, request, *args, **kwargs):
+        request.data._mutable = True
+        request.data['author'] = self.request.user.id
+        return self.create(request, *args, **kwargs)
 
 
 class ProductViewSet(viewsets.ModelViewSet):

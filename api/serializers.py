@@ -60,8 +60,9 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-        'id', 'product_name', 'categories', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat', 'fiber',
-        'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
+            'id', 'product_name', 'categories', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat',
+            'fiber',
+            'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -71,8 +72,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'recipe_name', 'difficulty', 'tags', 'ingredients', 'description', 'instructions', 'image_url',
-                  'meal', 'rating', 'ratings_num', 'comments')
+        fields = (
+        'id', 'user_id', 'recipe_name', 'difficulty', 'tags', 'ingredients', 'description', 'instructions', 'image_url',
+        'meal', 'prep_time', 'rating', 'ratings_num', 'comments')
 
 
 class CommentSerializer(serializers.ModelSerializer):

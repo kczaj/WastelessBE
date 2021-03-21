@@ -17,6 +17,8 @@ urlpatterns = [
     path('', include(router.urls)),
     path('profile/', views.CurrentUserViewSet.as_view()),
     path('profile/fridges/', views.CurrentUserFridges.as_view()),
+    path('profile/recipes/', views.CurrentUserRecipes.as_view()),
+    path('profile/comments/', views.CurrentUserComments.as_view()),
     path('profile/changepassword', views.ChangePasswordView.as_view()),
     path('profile/ratings/<int:recipe_id>/', views.RatingForUserViewSet.as_view()),
     path('register/', views.UserCreate.as_view()),
