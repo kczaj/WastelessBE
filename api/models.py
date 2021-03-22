@@ -60,6 +60,7 @@ class Recipe(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey('auth.User', related_name='comments', on_delete=models.CASCADE)
+    author_name = models.CharField(max_length=100)
     date_added = models.DateTimeField()
     content = models.TextField()
     recipe_id = models.ForeignKey(Recipe, related_name='comments', on_delete=models.CASCADE)
@@ -72,10 +73,6 @@ class Rating(models.Model):
     user_id = models.ForeignKey('auth.User', related_name='ratings', on_delete=models.CASCADE)
     rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     recipe_id = models.ForeignKey(Recipe, related_name='ratings', on_delete=models.CASCADE, null=True)
-
-    #class Meta:
-        #unique_together = ('user_id', 'recipe_id')
-        #index_together = ('user_id', 'recipe_id')
 
     def __str__(self):
         return self.id
