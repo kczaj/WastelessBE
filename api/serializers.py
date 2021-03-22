@@ -73,8 +73,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-        'id', 'user_id', 'recipe_name', 'difficulty', 'tags', 'ingredients', 'description', 'instructions', 'image_url',
-        'meal', 'prep_time', 'rating', 'ratings_num', 'comments')
+            'id', 'user_id', 'recipe_name', 'difficulty', 'tags', 'ingredients', 'description', 'instructions',
+            'image_url',
+            'meal', 'prep_time', 'rating', 'ratings_num', 'comments')
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -93,7 +94,9 @@ class RatingSerializer(serializers.ModelSerializer):
         fields = ('id', 'rating', 'recipe_id', 'user_id')
 
     def create(self, validated_data):
-        return Rating.objects.create(**validated_data)
+        rating, created = Rating.objects.update_or_create(user_id=validated_data.get('user_id', None),
+                                                          defaults={'rating': validated_data.get('rating', None)})
+        return rating
 
 
 class FridgeSerializer(serializers.ModelSerializer):
