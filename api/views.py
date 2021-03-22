@@ -87,11 +87,9 @@ class CurrentUserRecipes(generics.ListAPIView, mixins.CreateModelMixin):
 
     def get_queryset(self):
         user = self.request.user
-        print(user)
         return Recipe.objects.filter(user_id=user)
 
     def post(self, request, *args, **kwargs):
-        request.data._mutable = True
         request.data['user_id'] = self.request.user.id
         return self.create(request, *args, **kwargs)
 
@@ -102,11 +100,9 @@ class CurrentUserComments(generics.ListAPIView, mixins.CreateModelMixin):
 
     def get_queryset(self):
         user = self.request.user
-        print(user)
         return Comment.objects.filter(author=user)
 
     def post(self, request, *args, **kwargs):
-        request.data._mutable = True
         request.data['author'] = self.request.user.id
         return self.create(request, *args, **kwargs)
 
