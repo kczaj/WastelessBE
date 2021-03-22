@@ -166,7 +166,6 @@ class RatingForUserViewSet(generics.RetrieveUpdateDestroyAPIView, mixins.CreateM
         return Rating.objects.filter(recipe_id=r_id, user_id=user)
 
     def post(self, request, *args, **kwargs):
-        request.data._mutable = True
         request.data['user_id'] = self.request.user.id
         return self.create(request, *args, **kwargs)
 
