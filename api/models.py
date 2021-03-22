@@ -73,8 +73,8 @@ class Rating(models.Model):
     rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     recipe_id = models.ForeignKey(Recipe, related_name='ratings', on_delete=models.CASCADE, null=True)
 
-    class Meta:
-        unique_together = ('user_id', 'recipe_id')
+    #class Meta:
+        #unique_together = ('user_id', 'recipe_id')
         #index_together = ('user_id', 'recipe_id')
 
     def __str__(self):
