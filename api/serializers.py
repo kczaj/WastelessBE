@@ -83,7 +83,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'author', 'date_added', 'content', 'recipe_id')
+        fields = ('id', 'author', 'author_name', 'date_added', 'content', 'recipe_id')
 
 
 class RatingSerializer(serializers.ModelSerializer):
@@ -95,6 +95,7 @@ class RatingSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         rating, created = Rating.objects.update_or_create(user_id=validated_data.get('user_id', None),
+                                                          recipe_id=validated_data.get('recipe_id', None),
                                                           defaults={'rating': validated_data.get('rating', None)})
         return rating
 
