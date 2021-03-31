@@ -39,7 +39,8 @@ class Product(models.Model):
 class Recipe(models.Model):
     user_id = models.ForeignKey('auth.User', related_name='recipes', on_delete=models.CASCADE, null=True)
     recipe_name = models.CharField(max_length=200)
-    ingredients = ArrayField(models.CharField(max_length=50, blank=True), blank=False, default=list)
+    ingredients = ArrayField(ArrayField(models.CharField(max_length=50, blank=True), blank=False, default=list, size=3),
+                             default=list)
     tags = ArrayField(models.CharField(max_length=50, blank=True), blank=True, default=list)
     DIFFICULTY_CHOICES = [('BG', 'Beginner'), ('IT', 'Intermediate'), ('AD', 'Advanced')]
     difficulty = models.CharField(
