@@ -2,7 +2,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import User, UserManager
 from rest_framework import serializers
 
-from .models import Product, Fridge, Recipe, Comment, Rating
+from .models import Product, Fridge, Recipe, Comment, Rating, Ingredient
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -106,3 +106,10 @@ class FridgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fridge
         fields = ('id', 'fridge_name', 'user_id', 'products')
+
+
+class IngredientSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ingredient
+        fields = ('id', 'ingredient_name')

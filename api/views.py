@@ -10,9 +10,9 @@ from rest_framework.views import APIView
 from django.db.models import Count, Avg
 from django.db.models.functions import Coalesce
 
-from .models import Product, Fridge, Recipe, Comment, Rating
+from .models import Product, Fridge, Recipe, Comment, Rating, Ingredient
 from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer, \
-    ChangePasswordSerializer, RecipeSerializer, CommentSerializer, RatingSerializer
+    ChangePasswordSerializer, RecipeSerializer, CommentSerializer, RatingSerializer, IngredientSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -111,6 +111,20 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Product.objects.all().order_by('product_name')
     serializer_class = ProductSerializer
+
+
+class IngredientViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = IngredientSerializer
+    queryset = Ingredient.objects.all().order_by('ingredient_name')
+
+    def get_queryset(self):
+        queryset = Ingredient.objects.all().order_by('ingredient_name')
+        ingredient = self.request.query_params.get('ingredient', None)
+        if ingredient is not None:
+            ingredient = ingredient.lower()
+            queryset = queryset.filter(ingredient_name__contains=ingredient)
+        return queryset
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

@@ -36,6 +36,21 @@ class Product(models.Model):
         return self.product_name
 
 
+class LowerCharField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        super(LowerCharField, self).__init__(*args, **kwargs)
+
+    def get_prep_value(self, value):
+        return str(value).lower()
+
+
+class Ingredient(models.Model):
+    ingredient_name = LowerCharField(max_length=150, unique=True)
+
+    def __str__(self):
+        return self.ingredient_name
+
+
 class Recipe(models.Model):
     user_id = models.ForeignKey('auth.User', related_name='recipes', on_delete=models.CASCADE, null=True)
     recipe_name = models.CharField(max_length=200)
