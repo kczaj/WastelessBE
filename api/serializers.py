@@ -69,13 +69,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     comments = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     rating = serializers.FloatField(required=False)
     ratings_num = serializers.IntegerField(required=False)
+    popularity = serializers.FloatField(required=False)
 
     class Meta:
         model = Recipe
         fields = (
             'id', 'user_id', 'recipe_name', 'difficulty', 'tags', 'ingredients', 'description', 'instructions',
             'image_url',
-            'meal', 'prep_time', 'rating', 'ratings_num', 'comments')
+            'meal', 'prep_time', 'rating', 'ratings_num', 'comments', 'popularity')
 
 
 class CommentSerializer(serializers.ModelSerializer):
