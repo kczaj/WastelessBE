@@ -145,8 +145,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         queryset = Recipe.objects.annotate(
             ratings_num=Count('ratings'),
             rating=Coalesce(Avg('ratings__rating'), 0),
-            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1)**2,
-                                                                FloatField()) + 5 * Cast(Count('comments'), FloatField())
+            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2, FloatField()) + (Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
         )
         if recipe_name is not None:
             queryset = queryset.filter(recipe_name__contains=recipe_name)
