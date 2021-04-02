@@ -148,7 +148,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2, FloatField()) + (Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
         )
         if recipe_name is not None:
-            queryset = queryset.filter(recipe_name__contains=recipe_name)
+            queryset = queryset.filter(recipe_name__icontains=recipe_name)
         if ingredients is not None:
             queryset = queryset.filter(ingredients__contains=ingredients)
         if tags is not None:
