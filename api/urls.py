@@ -10,6 +10,7 @@ router.register(r'fridges', views.FridgeViewSet)
 router.register(r'recipes', views.RecipeViewSet)
 router.register(r'comments', views.CommentViewSet)
 router.register(r'ratings', views.RatingViewSet)
+router.register(r'ingredients', views.IngredientViewSet, basename='Ingredients')
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
