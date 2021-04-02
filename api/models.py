@@ -14,8 +14,17 @@ class Fridge(models.Model):
         return self.fridge_name
 
 
+class LowerCharField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        super(LowerCharField, self).__init__(*args, **kwargs)
+
+    def get_prep_value(self, value):
+        return str(value).lower()
+
+
 class Product(models.Model):
     product_name = models.CharField(max_length=150)
+    category = LowerCharField(max_length=150, default="None")
     quantity_g = models.FloatField()
     quantity = models.IntegerField()
     carbohydrates = models.FloatField()
@@ -34,14 +43,6 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
-
-
-class LowerCharField(models.CharField):
-    def __init__(self, *args, **kwargs):
-        super(LowerCharField, self).__init__(*args, **kwargs)
-
-    def get_prep_value(self, value):
-        return str(value).lower()
 
 
 class Ingredient(models.Model):
