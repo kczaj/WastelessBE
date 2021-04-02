@@ -132,7 +132,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ratings_num=Count('ratings'),
             rating=Coalesce(Avg('ratings__rating'), 0))
         if recipe_name is not None:
-            queryset = queryset.filter(recipe_name__contains=recipe_name)
+            queryset = queryset.filter(recipe_name__icontains=recipe_name)
         if ingredients is not None:
             queryset = queryset.filter(ingredients__contains=ingredients)
         if tags is not None:
