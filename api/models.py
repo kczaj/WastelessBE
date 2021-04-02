@@ -88,7 +88,7 @@ class Comment(models.Model):
 
 class Rating(models.Model):
     user_id = models.ForeignKey('auth.User', related_name='ratings', on_delete=models.CASCADE)
-    rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     recipe_id = models.ForeignKey(Recipe, related_name='ratings', on_delete=models.CASCADE, null=True)
 
     def __str__(self):

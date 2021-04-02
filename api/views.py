@@ -7,8 +7,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Count, Avg
-from django.db.models.functions import Coalesce
+from django.db.models import Count, Avg, FloatField, F, Sum
+from django.db.models.functions import Coalesce, Cast
 
 from .models import Product, Fridge, Recipe, Comment, Rating, Ingredient
 from .serializers import ProductSerializer, UserSerializer, FridgeSerializer, UserCreateSerializer, \
@@ -114,7 +114,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all().order_by('ingredient_name')
 
@@ -140,11 +140,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         difficulty = self.request.query_params.get('difficulty', None)
         meal = self.request.query_params.get('meal', None)
         order = self.request.query_params.get('order', None)
-        order_dict = {'na': 'recipe_name', 'nd': '-recipe_name', 'ra': 'rating', 'rd': '-rating',
+        order_dict = {'pp': '-popularity', 'na': 'recipe_name', 'nd': '-recipe_name', 'ra': 'rating', 'rd': '-rating',
                       'pa': 'ratings_num', 'pd': '-ratings_num', 'ta': 'prep_time', 'td': '-prep_time'}
         queryset = Recipe.objects.annotate(
             ratings_num=Count('ratings'),
-            rating=Coalesce(Avg('ratings__rating'), 0))
+            rating=Coalesce(Avg('ratings__rating'), 0),
+            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2, FloatField()) + (Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
+        )
         if recipe_name is not None:
             queryset = queryset.filter(recipe_name__contains=recipe_name)
         if ingredients is not None:
@@ -159,7 +161,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             if order in order_dict:
                 queryset = queryset.order_by(order_dict.get(order))
             else:
-                queryset = queryset.order_by(order_dict.get('na'))
+                queryset = queryset.order_by(order_dict.get('pp'))
+        else:
+            queryset = queryset.order_by(order_dict.get('pp'))
 
         return queryset
 
