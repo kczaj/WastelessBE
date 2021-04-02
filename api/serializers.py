@@ -60,7 +60,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            'id', 'product_name', 'categories', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat',
+            'id', 'product_name', 'category', 'quantity_g', 'quantity', 'carbohydrates', 'energy_kcal', 'fat',
             'fiber',
             'proteins', 'sugar', 'salt', 'sodium', 'image_url', 'date_added', 'expiration_date', 'fridge_id')
 

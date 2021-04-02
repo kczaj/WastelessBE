@@ -22,6 +22,7 @@ urlpatterns = [
     path('profile/comments/', views.CurrentUserComments.as_view()),
     path('profile/changepassword', views.ChangePasswordView.as_view()),
     path('profile/ratings/<int:recipe_id>/', views.RatingForUserViewSet.as_view()),
+    path('profile/recommend/<int:fridge_id>', views.RecommendationsForFridgeViewSet.as_view()),
     path('register/', views.UserCreate.as_view()),
     path('login/', views.CustomAuthToken.as_view()),
     path('logout/', views.Logout.as_view()),
