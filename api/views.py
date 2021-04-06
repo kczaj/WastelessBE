@@ -1,5 +1,6 @@
 from functools import reduce
 from itertools import combinations
+import datetime
 
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -193,6 +194,35 @@ class RecommendationsForFridgeViewSet(generics.ListAPIView):
                 if ingredient in recipe_ingredients:
                     present_ingredients += 1
             if present_ingredients >= required_ingredients:
+                recommendations.add(recipe.id)
+
+        return recipes.filter(id__in=recommendations)
+
+
+class UrgentRecommendationsForFridgeViewSet(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        f_id = self.kwargs['fridge_id']
+        fridge_ingredients = Product.objects.filter(fridge_id=f_id)
+        expiring_ingredients = list()
+
+        for ingredient in fridge_ingredients:
+            expiration_date = ingredient.expiration_date
+            diff = expiration_date.date() - datetime.date.today()
+            if diff.days < 3:
+                expiring_ingredients.append(ingredient.category)
+        if not expiring_ingredients:
+            return Recipe.objects.none()
+
+        recipes = Recipe.objects.all()
+        recommendations = set()
+        for recipe in recipes:
+            recipe_ingredients = [row[0] for row in recipe.ingredients]
+            if all(item in recipe_ingredients for item in expiring_ingredients):
                 recommendations.add(recipe.id)
 
         return recipes.filter(id__in=recommendations)
