@@ -150,7 +150,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             rating=Coalesce(Avg('ratings__rating'), 0),
             popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2,
                                                                 FloatField()) + (
-                                   Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
+                               Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
         )
         if recipe_name is not None:
             queryset = queryset.filter(recipe_name__icontains=recipe_name)
@@ -182,9 +182,20 @@ class RecommendationsForFridgeViewSet(generics.ListAPIView):
     def get_queryset(self):
         f_id = self.kwargs['fridge_id']
         fridge_ingredients = Product.objects.filter(fridge_id=f_id).values_list('category', flat=True)
-        queryset = Recipe.objects.filter(
-            reduce(lambda x, y: x | y, [Q(ingredients__contains=comb) for comb in combinations(fridge_ingredients, 3)]))
-        return queryset
+        recipes = Recipe.objects.all()
+        recommendations = set()
+        for recipe in recipes:
+            num_of_ingredients = len(recipe.ingredients)
+            required_ingredients = round(0.7 * num_of_ingredients)
+            present_ingredients = 0
+            recipe_ingredients = [row[0] for row in recipe.ingredients]
+            for ingredient in fridge_ingredients:
+                if ingredient in recipe_ingredients:
+                    present_ingredients += 1
+            if present_ingredients >= required_ingredients:
+                recommendations.add(recipe.id)
+
+        return recipes.filter(id__in=recommendations)
 
 
 class RatingViewSet(viewsets.ModelViewSet):
