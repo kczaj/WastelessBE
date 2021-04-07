@@ -21,7 +21,6 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ("-date_added",)
 
     def changelist_view(self, request, extra_context=None):
-        # Aggregate new subscribers per day
         chart_data = (
             Product.objects.annotate(date=TruncDay("date_added"))
                 .values("date")
@@ -29,11 +28,9 @@ class ProductAdmin(admin.ModelAdmin):
                 .order_by("-date")
         )
 
-        # Serialize and attach the chart data to the template context
         as_json = json.dumps(list(chart_data), cls=DjangoJSONEncoder)
         extra_context = extra_context or {"chart_data": as_json}
 
-        # Call the superclass changelist_view to render the page
         return super().changelist_view(request, extra_context=extra_context)
 
 
@@ -55,11 +52,9 @@ class RecipeAdmin(admin.ModelAdmin):
         to_json['meals'] = to_json['meals'].replace("DN", "Dinner")
         to_json['meals'] = to_json['meals'].replace("SU", "Supper")
 
-        # Serialize and attach the chart data to the template context
         extra_context = extra_context or {"chart_data": to_json}
         print(to_json)
 
-        # Call the superclass changelist_view to render the page
         return super().changelist_view(request, extra_context=extra_context)
 
 
@@ -76,12 +71,10 @@ class UserAdmin(admin.ModelAdmin):
                 .order_by("-date")
         )
 
-        # Serialize and attach the chart data to the template context
         as_json = json.dumps(list(chart_data), cls=DjangoJSONEncoder)
         print(as_json)
         extra_context = extra_context or {"chart_data": as_json}
 
-        # Call the superclass changelist_view to render the page
         return super().changelist_view(request, extra_context=extra_context)
 
 
