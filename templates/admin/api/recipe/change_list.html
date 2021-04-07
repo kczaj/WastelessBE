@@ -1,0 +1,106 @@
+# web/templates/admin/web/emailsubscriber/change_list.html
+
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+<!-- Override extrahead to add Chart.js -->
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const ctx2 = document.getElementById('myChart2').getContext('2d');
+
+        const colors = [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)',
+            'rgb(200, 100, 250)',
+        ];
+        // Sample data
+        const chartData = {{chart_data | safe}};
+
+        let difficulties = JSON.parse(chartData.difficulties);
+        let meals = JSON.parse(chartData.meals);
+
+        let labels = [];
+        let counts = [];
+        difficulties.forEach((e) => {
+            labels.push(e.difficulty);
+            counts.push(e.count);
+        });
+
+
+        // Parse the dates to JS
+        // Render the chart
+        const chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Difficulty',
+                    data: counts,
+                    backgroundColor: colors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Chart.js Pie Chart'
+                    }
+                }
+            },
+        });
+
+        labels = [];
+        counts = [];
+        meals.forEach((e) => {
+            labels.push(e.meal);
+            counts.push(e.count);
+        });
+
+        const chart2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Meal type',
+                    data: counts,
+                    backgroundColor: colors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Chart.js Pie Chart'
+                    }
+                }
+            },
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Render our chart -->
+<div style="display: flex; width: 30%;">
+    <canvas style="margin-bottom: 30px; height: 30%;" id="myChart"></canvas>
+    <canvas style="margin-bottom: 30px; height: 30%;" id="myChart2"></canvas>
+</div>
+<!-- Render the rest of the ChangeList view -->
+{{ block.super }}
+{% endblock %}
