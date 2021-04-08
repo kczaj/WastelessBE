@@ -1,3 +1,7 @@
+from functools import reduce
+from itertools import combinations
+import datetime
+
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from rest_framework import viewsets, mixins, generics, status
@@ -7,7 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Count, Avg, FloatField, F, Sum
+from django.db.models import Count, Avg, FloatField, F, Sum, Q
 from django.db.models.functions import Coalesce, Cast
 
 from .models import Product, Fridge, Recipe, Comment, Rating, Ingredient
@@ -145,7 +149,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         queryset = Recipe.objects.annotate(
             ratings_num=Count('ratings'),
             rating=Coalesce(Avg('ratings__rating'), 0),
-            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2, FloatField()) + (Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
+            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2,
+                                                                FloatField()) + (
+                               Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
         )
         if recipe_name is not None:
             queryset = queryset.filter(recipe_name__icontains=recipe_name)
@@ -166,6 +172,60 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.order_by(order_dict.get('pp'))
 
         return queryset
+
+
+class RecommendationsForFridgeViewSet(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        f_id = self.kwargs['fridge_id']
+        fridge_ingredients = Product.objects.filter(fridge_id=f_id).values_list('category', flat=True)
+        recipes = Recipe.objects.all()
+        recommendations = set()
+        for recipe in recipes:
+            num_of_ingredients = len(recipe.ingredients)
+            required_ingredients = round(0.7 * num_of_ingredients)
+            present_ingredients = 0
+            recipe_ingredients = [row[0] for row in recipe.ingredients]
+            for ingredient in fridge_ingredients:
+                if ingredient in recipe_ingredients:
+                    present_ingredients += 1
+            if present_ingredients >= required_ingredients:
+                recommendations.add(recipe.id)
+
+        return recipes.filter(id__in=recommendations)
+
+
+class UrgentRecommendationsForFridgeViewSet(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        f_id = self.kwargs['fridge_id']
+        fridge_ingredients = Product.objects.filter(fridge_id=f_id)
+        expiring_ingredients = list()
+
+        for ingredient in fridge_ingredients:
+            expiration_date = ingredient.expiration_date
+            diff = expiration_date.date() - datetime.date.today()
+            if diff.days < 3:
+                expiring_ingredients.append(ingredient.category)
+        if not expiring_ingredients:
+            return Recipe.objects.none()
+
+        recipes = Recipe.objects.all()
+        recommendations = set()
+        for recipe in recipes:
+            recipe_ingredients = [row[0] for row in recipe.ingredients]
+            if all(item in recipe_ingredients for item in expiring_ingredients):
+                recommendations.add(recipe.id)
+
+        return recipes.filter(id__in=recommendations)
 
 
 class RatingViewSet(viewsets.ModelViewSet):

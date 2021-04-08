@@ -39,7 +39,6 @@ class Product(models.Model):
     date_added = models.DateTimeField()
     expiration_date = models.DateTimeField()
     fridge_id = models.ForeignKey(Fridge, related_name='products', on_delete=models.CASCADE)
-    categories = ArrayField(models.CharField(max_length=50, blank=True), blank=False, null=True)
 
     def __str__(self):
         return self.product_name
