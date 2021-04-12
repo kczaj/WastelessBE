@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'drf_yasg',
     'corsheaders',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'django_rest_resetpassword'
 ]
 
 MIDDLEWARE = [
@@ -150,3 +151,10 @@ CORS_ALLOWED_ORIGINS = [
 #
 
 LOGIN_REDIRECT_URL = '/profile'
+
+#email settings
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'wasteless.mail@gmail.com'
+EMAIL_HOST_PASSWORD = 'zaq12wsxZAQ!@WSX'
+EMAIL_USE_TLS = True

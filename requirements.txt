@@ -5,3 +5,4 @@ djangorestframework~=3.12.2
 drf-yasg
 django-extensions
 django-cors-headers
+django-rest-resetpassword
