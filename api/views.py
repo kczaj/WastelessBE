@@ -196,7 +196,42 @@ class RecommendationsForFridgeViewSet(generics.ListAPIView):
             if present_ingredients >= required_ingredients:
                 recommendations.add(recipe.id)
 
-        return recipes.filter(id__in=recommendations)
+        queryset = recipes.filter(id__in=recommendations)
+
+        recipe_name = self.request.query_params.get('name', None)
+        ingredients = self.request.query_params.get('ingredients', None)
+        tags = self.request.query_params.get('tags', None)
+        difficulty = self.request.query_params.get('difficulty', None)
+        meal = self.request.query_params.get('meal', None)
+        order = self.request.query_params.get('order', None)
+        order_dict = {'pp': '-popularity', 'na': 'recipe_name', 'nd': '-recipe_name', 'ra': 'rating', 'rd': '-rating',
+                      'pa': 'ratings_num', 'pd': '-ratings_num', 'ta': 'prep_time', 'td': '-prep_time'}
+        queryset = queryset.annotate(
+            ratings_num=Count('ratings'),
+            rating=Coalesce(Avg('ratings__rating'), 0),
+            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2,
+                                                                FloatField()) + (
+                               Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
+        )
+        if recipe_name is not None:
+            queryset = queryset.filter(recipe_name__icontains=recipe_name)
+        if ingredients is not None:
+            queryset = queryset.filter(ingredients__contains=ingredients)
+        if tags is not None:
+            queryset = queryset.filter(tags__contains=tags)
+        if difficulty is not None:
+            queryset = queryset.filter(difficulty__contains=difficulty)
+        if meal is not None:
+            queryset = queryset.filter(meal__contains=meal)
+        if order is not None:
+            if order in order_dict:
+                queryset = queryset.order_by(order_dict.get(order))
+            else:
+                queryset = queryset.order_by(order_dict.get('pp'))
+        else:
+            queryset = queryset.order_by(order_dict.get('pp'))
+
+        return queryset
 
 
 class UrgentRecommendationsForFridgeViewSet(generics.ListAPIView):
@@ -225,7 +260,42 @@ class UrgentRecommendationsForFridgeViewSet(generics.ListAPIView):
             if all(item in recipe_ingredients for item in expiring_ingredients):
                 recommendations.add(recipe.id)
 
-        return recipes.filter(id__in=recommendations)
+        queryset = recipes.filter(id__in=recommendations)
+
+        recipe_name = self.request.query_params.get('name', None)
+        ingredients = self.request.query_params.get('ingredients', None)
+        tags = self.request.query_params.get('tags', None)
+        difficulty = self.request.query_params.get('difficulty', None)
+        meal = self.request.query_params.get('meal', None)
+        order = self.request.query_params.get('order', None)
+        order_dict = {'pp': '-popularity', 'na': 'recipe_name', 'nd': '-recipe_name', 'ra': 'rating', 'rd': '-rating',
+                      'pa': 'ratings_num', 'pd': '-ratings_num', 'ta': 'prep_time', 'td': '-prep_time'}
+        queryset = queryset.annotate(
+            ratings_num=Count('ratings'),
+            rating=Coalesce(Avg('ratings__rating'), 0),
+            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2,
+                                                                FloatField()) + (
+                               Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
+        )
+        if recipe_name is not None:
+            queryset = queryset.filter(recipe_name__icontains=recipe_name)
+        if ingredients is not None:
+            queryset = queryset.filter(ingredients__contains=ingredients)
+        if tags is not None:
+            queryset = queryset.filter(tags__contains=tags)
+        if difficulty is not None:
+            queryset = queryset.filter(difficulty__contains=difficulty)
+        if meal is not None:
+            queryset = queryset.filter(meal__contains=meal)
+        if order is not None:
+            if order in order_dict:
+                queryset = queryset.order_by(order_dict.get(order))
+            else:
+                queryset = queryset.order_by(order_dict.get('pp'))
+        else:
+            queryset = queryset.order_by(order_dict.get('pp'))
+
+        return queryset
 
 
 class RatingViewSet(viewsets.ModelViewSet):
