@@ -12,8 +12,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 import django_heroku
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -153,8 +156,19 @@ CORS_ALLOWED_ORIGINS = [
 LOGIN_REDIRECT_URL = '/profile'
 
 #email settings
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'wasteless.mail@gmail.com'
-EMAIL_HOST_PASSWORD = 'zaq12wsxZAQ!@WSX'
-EMAIL_USE_TLS = True
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+
+DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 1
+DJANGO_REST_RESETPASSWORD_NO_INFORMATION_LEAKAGE = True
+
+DJANGO_REST_RESETPASSWORD_TOKEN_CONFIG = {
+    "CLASS": "django_rest_resetpassword.tokens.RandomStringTokenGenerator",
+    "OPTIONS": {
+        "min_length": 64,
+        "max_length": 64
+    }
+}
