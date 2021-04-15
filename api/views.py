@@ -256,8 +256,14 @@ class UrgentRecommendationsForFridgeViewSet(generics.ListAPIView):
         recipes = Recipe.objects.all()
         recommendations = set()
         for recipe in recipes:
+            num_of_ingredients = len(expiring_ingredients)
+            required_ingredients = round(0.7 * num_of_ingredients)
+            present_ingredients = 0
             recipe_ingredients = [row[0] for row in recipe.ingredients]
-            if all(item in recipe_ingredients for item in expiring_ingredients):
+            for ingredient in expiring_ingredients:
+                if ingredient in recipe_ingredients:
+                    present_ingredients += 1
+            if present_ingredients >= required_ingredients:
                 recommendations.add(recipe.id)
 
         queryset = recipes.filter(id__in=recommendations)
