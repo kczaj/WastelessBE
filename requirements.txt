@@ -6,3 +6,4 @@ drf-yasg
 django-extensions
 django-cors-headers
 django-rest-resetpassword
+python-dotenv
