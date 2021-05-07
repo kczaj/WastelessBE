@@ -149,7 +149,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         queryset = Recipe.objects.annotate(
             ratings_num=Count('ratings'),
             rating=Coalesce(Avg('ratings__rating'), 0),
-            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2,
+            popularity=Cast(Count('ratings'), FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2,
                                                                 FloatField()) + (
                                Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
         )
@@ -209,7 +209,7 @@ class RecommendationsForFridgeViewSet(generics.ListAPIView):
         queryset = queryset.annotate(
             ratings_num=Count('ratings'),
             rating=Coalesce(Avg('ratings__rating'), 0),
-            popularity=Cast('ratings_num', FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2,
+            popularity=Cast(Count('ratings'), FloatField()) * Cast(Coalesce(Avg('ratings__rating'), 1) ** 2,
                                                                 FloatField()) + (
                                Cast(Count('comments'), FloatField()) - Cast('ratings_num', FloatField()))
         )
