@@ -367,3 +367,22 @@ class Logout(APIView):
     def get(self, request, format=None):
         request.user.auth_token.delete()
         return JsonResponse({'message': 'Logged out correctly'}, status=200)
+
+
+class Notification(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        f_id = self.kwargs['fridge_id']
+        expiring_ingredients = set()
+        fridge_ingredients = Product.objects.filter(fridge_id=f_id)
+        for ingredient in fridge_ingredients:
+            expiration_date = ingredient.expiration_date
+            diff = expiration_date.date() - datetime.date.today()
+            if diff.days < 3:
+                expiring_ingredients.add(ingredient.id)
+        if not expiring_ingredients:
+            return Recipe.objects.none()
+        queryset = Product.objects.all().filter(id__in=expiring_ingredients)
+        return queryset
