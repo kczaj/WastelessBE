@@ -28,5 +28,6 @@ urlpatterns = [
     path('login/', views.CustomAuthToken.as_view()),
     path('logout/', views.Logout.as_view()),
     path('fridge/<int:fridge_id>/', views.FridgeProductViewSet.as_view()),
+    path('notification/<int:fridge_id>', views.Notification.as_view()),
     path(r'password-reset/', include('django_rest_resetpassword.urls', namespace='password_reset'))
 ]
